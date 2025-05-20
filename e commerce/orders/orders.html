@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Orders - E-commerce Project</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./order.css">
+</head>
+<body>
+    <div class="announcement-bar">
+        <div class="announcement-left">
+            <span class="project-title">E-Commerce Hub</span>
+        </div>
+        <div class="announcement-right">
+            <a href="../login/login.html" class="announcement-link" id="accountLink">Login/Signup</a>
+            <a href="#" class="announcement-link">Help & Contact</a>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <a href="../homepage1/homepage1.html" class="logo">E-Commerce</a>
+        <div class="nav-right">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search products...">
+                <i class="fas fa-search search-icon"></i>
+                <div id="searchSuggestions" class="suggestions"></div>
+            </div>
+            <div class="nav-buttons">
+                <a href="../homepage1/homepage1.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="../cart/cart.html" id="cartIcon" class="nav-link"><i class="fas fa-shopping-cart"></i> Cart <span class="cart-count">0</span></a>
+                <a href="./orders.html" class="nav-link"><i class="fas fa-box"></i> Orders</a>
+                <div class="user-section">
+                    <div id="userIcon" class="user-icon">
+                        <img id="userPhoto" src="" alt="User" style="display: none;">
+                        <i id="defaultUserIcon" class="fas fa-user"></i>
+                        <span id="userName" style="display: none;"></span>
+                    </div>
+                    <div class="dropdown">
+                        <a href="../profile/profile.html" id="viewProfile" style="display: none;">View Profile</a>
+                        <a href="#" id="logoutBtn" style="display: none;">Logout</a>
+                        <div id="loginSignupDropdown">
+                            <a href="../login/login.html" id="accountLink">Login/Signup</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="orders-container">
+        <div class="orders-card">
+            <h2>Your Orders</h2>
+            <div id="orders-list"></div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="./order.js"></script>
+</body>
+</html>

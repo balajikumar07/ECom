@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COZA STORE - Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./homepage.css">
+</head>
+<body>
+    <!-- Top Announcement Bar -->
+    <div class="announcement-bar">
+        <p>Free shipping for standard order over $100</p>
+        <div class="top-links">
+            <a href="#">Help & FAQs</a>
+            <a href="#" id="accountLink">My Account</a>
+            <select id="languageSelect">
+                <option value="EN">EN</option>
+                <option value="ES">ES</option>
+                <option value="FR">FR</option>
+            </select>
+            <select id="currencySelect">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">COZA STORE</div>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="#">Shop</a></li>
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+        <div class="nav-icons">
+            <div class="search-box">
+                <input type="text" placeholder="Search...">
+                <i class="fas fa-search"></i>
+            </div>
+            <a href="#" id="cartIcon"><i class="fas fa-shopping-cart"></i><span class="cart-count">0</span></a>
+            <a href="#" id="userIcon"><i class="fas fa-user"></i></a>
+        </div>
+    </nav>
+
+    <!-- Hero Banner -->
+    <section class="hero-banner">
+        <div class="banner-content">
+            <h2>Men New-Season</h2>
+            <h1>JACKETS & COATS</h1>
+            <button class="shop-now-btn">SHOP NOW</button>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products-section">
+        <h2 class="section-title">Featured Products</h2>
+        <div class="products-grid" id="productsContainer">
+            <!-- Products will be loaded here via AJAX -->
+        </div>
+    </section>
+
+    <!-- Product Quick View Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-product-details">
+                <div class="modal-product-images">
+                    <div class="main-image">
+                        <img id="modalMainImage" src="" alt="Product Image">
+                    </div>
+                    <div class="thumbnail-images">
+                        <!-- Thumbnails will be added dynamically -->
+                    </div>
+                </div>
+                <div class="modal-product-info">
+                    <h2 id="modalProductName"></h2>
+                    <p class="price" id="modalProductPrice"></p>
+                    <p class="description" id="modalProductDescription"></p>
+                    <p class="stock" id="modalProductStock"></p>
+                    
+                    <div class="product-options">
+                        <div class="option">
+                            <label for="size">Size</label>
+                            <select id="size">
+                                <option value="">Choose an option</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                            </select>
+                        </div>
+                        <div class="option">
+                            <label for="color">Color</label>
+                            <select id="color">
+                                <option value="">Choose an option</option>
+                                <option value="Red">Red</option>
+                                <option value="Blue">Blue</option>
+                                <option value="Black">Black</option>
+                                <option value="White">White</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="quantity">
+                        <label for="qty">Quantity</label>
+                        <input type="number" id="qty" min="1" value="1">
+                    </div>
+                    
+                    <button class="add-to-cart-btn" id="modalAddToCart">ADD TO CART</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="#" id="showSignup">Sign up</a></p>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Sign Up</h2>
+            <form id="signupForm">
+                <input type="text" placeholder="Full Name" required>
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <input type="password" placeholder="Confirm Password" required>
+                <button type="submit">Sign Up</button>
+            </form>
+            <p>Already have an account? <a href="#" id="showLogin">Login</a></p>
+        </div>
+    </div>
+
+    <script src="./homepage.js"></script>
+</body>
+</html>

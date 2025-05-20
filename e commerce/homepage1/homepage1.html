@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="homepage1.css">
+</head>
+<body>
+    <!-- Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="announcement-left">
+            <span class="project-title">E-Commerce Store</span>
+        </div>
+        <div class="announcement-right">
+            <a href="#" class="announcement-link">Free Shipping</a>
+            <a href="#" class="announcement-link">30-Day Returns</a>
+            <a href="#" class="announcement-link">24/7 Support</a>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="../index.html" class="logo">ShopEase</a>
+        <div class="nav-right">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search products...">
+                <div class="search-icon"><i class="fas fa-search"></i></div>
+                <div id="searchSuggestions" class="suggestions"></div>
+            </div>
+            <div class="nav-buttons">
+                <a href="../orders/orders.html" class="nav-link"><i class="fas fa-box"></i> Orders</a>
+                <a href="#" class="nav-link" id="cartIcon"><i class="fas fa-shopping-cart"></i> Cart <span class="cart-count">0</span></a>
+                <div class="user-section">
+                    <div class="user-icon">
+                        <i id="defaultUserIcon" class="fas fa-user-circle"></i>
+                        <img id="userPhoto" src="" alt="User" style="display: none;">
+                        <span id="userName" style="display: none;"></span>
+                        <div class="dropdown">
+                            <a href="#" id="viewProfile" style="display: none;"><i class="fas fa-user"></i> Profile</a>
+                            <a href="../login/login.html" id="loginSignupDropdown"><i class="fas fa-sign-in-alt"></i> Login/Signup</a>
+                            <a href="#" id="logoutBtn" style="display: none;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <div class="banner-text">
+            <div>Discover Amazing Products</div>
+            <div>At Unbeatable Prices</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2>Featured Products</h2>
+        <div class="product-grid" id="productContainer">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModel" class="product-model">
+        <div class="product-model-content">
+            <span class="close" id="closeModel">×</span>
+            <div class="model-body">
+                <div class="model-images">
+                    <div id="thumbnailContainer"></div>
+                </div>
+                <div class="model-details">
+                    <h2 id="modelTitle">Product Title</h2>
+                    <div class="price-section">
+                        <span id="modelPrice" class="current-price">$99.99</span>
+                        <span id="modelOriginalPrice" class="original-price">$129.99</span>
+                        <span id="modelDiscountBadge" class="discount-badge">23% OFF</span>
+                    </div>
+                    <p id="modelDescription">Product description goes here...</p>
+                    <div class="specifications">
+                        <h3>Specifications</h3>
+                        <ul id="modelSpecs">
+                            <li>Spec 1</li>
+                            <li>Spec 2</li>
+                        </ul>
+                    </div>
+                    <div class="reviews">
+                        <h3>Reviews</h3>
+                        <div id="modelReviews">No reviews yet.</div>
+                    </div>
+                    <div class="quantity-selector">
+                        <button class="quantity-btn minus">-</button>
+                        <input type="number" id="quantity" value="1" min="1">
+                        <button class="quantity-btn plus">+</button>
+                    </div>
+                    <div class="model-actions">
+                        <button id="modelAddCart" class="action-btn add-cart-btn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        <button id="modelBuyNow" class="action-btn buy-now-btn"><i class="fas fa-bolt"></i> Buy Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Address Modal -->
+    <div id="addressModal" class="product-model">
+        <div class="product-model-content">
+            <span class="close">×</span>
+            <h3>Select Delivery Address</h3>
+            <div id="addressList">
+                <!-- Addresses will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="homepage1.js"></script>
+</body>
+</html>

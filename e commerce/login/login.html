@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <link rel="stylesheet" href="./login.css">
+
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to continue to your account</p>
+            </div>
+
+            <form id="loginForm" class="form-container">
+                <div class="form-group">
+                    <label for="identifier">Email Address</label>
+                    <div class="input-field">
+                        <input type="email" id="identifier" required />
+                        <i class="fas fa-envelope icon"></i>
+                    </div>
+                </div>
+
+                <div id="loginMessage" class="message-hidden"></div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-field">
+                        <input type="password" id="password" required />
+                        <i class="fas fa-lock icon"></i>
+                        <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="btn-text">Login</span>
+                </button>
+            </form>
+
+            <p id="message" class="message-box"></p>
+
+            <div class="login-footer">
+                Don't have an account? <a href="../signup/signup.html">Sign up</a>
+            </div>
+            <!-- Add to your login form -->
+
+        </div>
+    </div>
+
+    <script src="./login.js"></script>
+</body>
+</html>

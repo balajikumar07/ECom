@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message API Test</title>
+</head>
+<body>
+    <h1>Send a Message</h1>
+    
+    <!-- Input Field to Enter Message -->
+    <input type="text" id="messageInput" placeholder="Enter message" />
+    
+    <!-- Button to Trigger POST Request -->
+    <button onclick="sendMessage()">Send Message</button>
+    
+    <!-- Paragraph to Display Response -->
+    <p id="response"></p>
+
+    <script>
+        function sendMessage() {
+            const message = document.getElementById("messageInput").value;  // Get message from input field
+
+            if (!message) {
+                document.getElementById("response").innerText = "Please enter a message!";
+                return;
+            }
+
+            // Send POST request to the API endpoint
+            fetch('http://192.168.2.12:5233/api/message', {  // Change to your API URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',  // Specify content type as JSON
+                },
+                body: JSON.stringify(message)  // Send the message in the body of the request
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();  // Parse the JSON response
+            })
+            .then(data => {
+                // Display the response from the API in the paragraph element
+                document.getElementById("response").innerText = data.response;
+            })
+            .catch(error => {
+                // Display error message if request fails
+                console.error('There was a problem with the fetch operation:', error);
+                document.getElementById("response").innerText = "Error: " + error.message;
+            });
+        }
+    </script>
+</body>
+</html>

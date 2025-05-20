@@ -1,0 +1,241 @@
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.announcement-bar {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.announcement-left .project-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.announcement-right .announcement-link {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 14px;
+}
+
+.announcement-right .announcement-link:hover {
+    text-decoration: underline;
+}
+
+.navbar {
+    background-color: white;
+    padding: 15px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    text-decoration: none;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.search-container {
+    position: relative;
+    margin-right: 20px;
+}
+
+#searchInput {
+    padding: 8px 40px 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    width: 200px;
+}
+
+.search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.nav-link {
+    color: #333;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link i {
+    margin-right: 5px;
+}
+
+.cart-count {
+    background-color: #ff5733;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 8px;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.user-section {
+    position: relative;
+}
+
+.user-icon {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.user-icon img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+    z-index: 1000;
+}
+
+.user-icon:hover .dropdown {
+    display: block;
+}
+
+.dropdown a {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.dropdown a:hover {
+    background-color: #f4f4f4;
+}
+
+.order-status-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.order-status-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.order-status-card h2 {
+    margin-top: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.order-status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.order-status-details {
+    text-align: center;
+}
+
+.order-status-details h3 {
+    margin: 10px 0;
+    font-size: 20px;
+}
+
+.order-status-details p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.order-status {
+    font-weight: 600;
+}
+
+.order-status.pending {
+    color: #ff9800;
+}
+
+.order-status.delivered {
+    color: #4caf50;
+}
+
+.order-status.cancelled {
+    color: #f44336;
+}
+
+.empty-status {
+    text-align: center;
+    color: #555;
+}
+
+.empty-status button {
+    background-color: #ff5733;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.empty-status button:hover {
+    background-color: #e64a19;
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: white;
+    z-index: 1000;
+    display: none;
+}
+
+.toast.info {
+    background-color: #2196f3;
+}
+
+.toast.error {
+    background-color: #f44336;
+}
+
+.toast.success {
+    background-color: #4caf50;
+}
