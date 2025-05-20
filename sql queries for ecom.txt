@@ -1,0 +1,683 @@
+USE master
+GO
+
+-- Database: ECommerce
+CREATE DATABASE ECommerce;
+GO
+
+USE [ECommerce]
+GO
+
+-- Table: Dealers
+CREATE TABLE Dealers (
+    DealerID INT IDENTITY(1,1) PRIMARY KEY,
+    DealerName NVARCHAR(100) NOT NULL,
+    Email NVARCHAR(255) NOT NULL UNIQUE,
+    PasswordHash NVARCHAR(256) NOT NULL,
+    ContactNumber NVARCHAR(20) NULL,
+    CompanyName NVARCHAR(100) NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE()
+);
+GO
+
+-- Table: Customers
+CREATE TABLE Customers (
+    CustomerID INT IDENTITY(1,1) PRIMARY KEY,
+    CustomerName NVARCHAR(100) NOT NULL,
+    Email NVARCHAR(255) NOT NULL UNIQUE,
+    PasswordHash NVARCHAR(256) NOT NULL,
+    ContactNumber NVARCHAR(20) NULL,
+    Image NVARCHAR(255) NULL
+);
+GO
+
+-- Table: Products
+CREATE TABLE Products (
+    ProductID INT IDENTITY(1,1) PRIMARY KEY,
+    DealerID INT NOT NULL,
+    ProductName NVARCHAR(255) NOT NULL,
+    Description NVARCHAR(MAX) NULL,
+    Price DECIMAL(18,2) NOT NULL,
+    Stock INT NOT NULL,
+    ImagePath NVARCHAR(255) NULL,
+    CreatedDate DATETIME NOT NULL DEFAULT GETDATE(),
+    UpdatedDate DATETIME NOT NULL DEFAULT GETDATE(),
+    AlliasName NVARCHAR(255) NULL,
+    FOREIGN KEY (DealerID) REFERENCES Dealers(DealerID)
+);
+GO
+
+-- Table: ProductImages
+CREATE TABLE ProductImages (
+    ImageID INT IDENTITY(1,1) PRIMARY KEY,
+    ProductID INT NOT NULL,
+    ImagePath NVARCHAR(MAX) NOT NULL,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+GO
+
+-- Table: CustomerAddress
+CREATE TABLE CustomerAddress (
+    AddressID INT IDENTITY(1,1) PRIMARY KEY,
+    CustomerID INT NOT NULL,
+    Address NVARCHAR(MAX) NOT NULL,
+    Name NVARCHAR(100) NOT NULL,
+    PhoneNumber NVARCHAR(20) NOT NULL,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+GO
+
+-- Table: AddToCart
+CREATE TABLE AddToCart (
+    CartID INT IDENTITY(1,1) PRIMARY KEY,
+    CustomerID INT NOT NULL,
+    ProductID INT NOT NULL,
+    Quantity INT NOT NULL,
+    AddedDate DATETIME NOT NULL DEFAULT GETDATE(),
+    IsCheckedOut BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+GO
+
+-- Table: Orders
+CREATE TABLE Orders (
+    OrderID INT IDENTITY(1,1) PRIMARY KEY,
+    CustomerID INT NOT NULL,
+    ProductID INT NOT NULL,
+    DealerID INT NOT NULL,
+    Quantity INT NOT NULL,
+    OrderDate DATETIME NOT NULL DEFAULT GETDATE(),
+    AddressID INT NOT NULL,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
+    FOREIGN KEY (DealerID) REFERENCES Dealers(DealerID),
+    FOREIGN KEY (AddressID) REFERENCES CustomerAddress(AddressID)
+);
+GO
+
+-- Table: OrderStatus
+CREATE TABLE OrderStatus (
+    StatusID INT IDENTITY(1,1) PRIMARY KEY,
+    OrderID INT NOT NULL,
+    Status NVARCHAR(50) NOT NULL DEFAULT 'Pending',
+    UpdatedDate DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+);
+GO
+
+-- SP: sp_CustomerSignup
+CREATE PROCEDURE [dbo].[sp_CustomerSignup]
+    @CustomerName NVARCHAR(100),
+    @Email NVARCHAR(255),
+    @PasswordHash NVARCHAR(256),
+    @ContactNumber NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO Customers (CustomerName, Email, PasswordHash, ContactNumber)
+    VALUES (@CustomerName, @Email, @PasswordHash, @ContactNumber);
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_CustomerLoginByEmail
+CREATE PROCEDURE [dbo].[sp_CustomerLoginByEmail]
+    @Email NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT CustomerID, CustomerName, PasswordHash
+    FROM Customers
+    WHERE Email = @Email;
+END
+GO
+
+-- SP: sp_CustomerLogin
+CREATE PROCEDURE [dbo].[sp_CustomerLogin]
+    @Email NVARCHAR(255),
+    @Password NVARCHAR(256)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT CustomerID, CustomerName, Email, ContactNumber, Image
+    FROM Customers
+    WHERE Email = @Email AND PasswordHash = @Password;
+END
+GO
+
+-- SP: sp_VerifyCustomer
+CREATE PROCEDURE [dbo].[sp_VerifyCustomer]
+    @Email NVARCHAR(255),
+    @Token NVARCHAR(256)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    -- Placeholder for verification logic (e.g., update a verification status)
+    SELECT 1 AS RowsAffected; -- Adjust based on actual verification table
+END
+GO
+
+-- SP: sp_GetCustomerProfile
+CREATE PROCEDURE [dbo].[sp_GetCustomerProfile]
+    @CustomerID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT CustomerID, CustomerName, Email, ContactNumber, Image
+    FROM Customers
+    WHERE CustomerID = @CustomerID;
+END
+GO
+
+-- SP: sp_UpdateCustomerProfile
+CREATE PROCEDURE [dbo].[sp_UpdateCustomerProfile]
+    @CustomerID INT,
+    @CustomerName NVARCHAR(100),
+    @Email NVARCHAR(255),
+    @ContactNumber NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE Customers
+    SET CustomerName = @CustomerName, Email = @Email, ContactNumber = @ContactNumber
+    WHERE CustomerID = @CustomerID;
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_UpdateCustomerImage
+CREATE PROCEDURE [dbo].[sp_UpdateCustomerImage]
+    @CustomerID INT,
+    @ProfileImage NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE Customers
+    SET Image = @ProfileImage
+    WHERE CustomerID = @CustomerID;
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_DealerSignup
+CREATE PROCEDURE [dbo].[sp_DealerSignup]
+    @DealerName NVARCHAR(100),
+    @Email NVARCHAR(255),
+    @PasswordHash NVARCHAR(256),
+    @ContactNumber NVARCHAR(20) = NULL,
+    @CompanyName NVARCHAR(100) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF EXISTS (SELECT 1 FROM Dealers WHERE Email = @Email)
+    BEGIN
+        RAISERROR ('Email already exists.', 16, 1);
+        RETURN;
+    END
+    INSERT INTO Dealers (DealerName, Email, PasswordHash, ContactNumber, CompanyName, CreatedAt)
+    VALUES (@DealerName, @Email, @PasswordHash, @ContactNumber, @CompanyName, GETDATE());
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_DealerLoginByEmail
+CREATE PROCEDURE [dbo].[sp_DealerLoginByEmail]
+    @Email NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT DealerID, DealerName, PasswordHash
+    FROM Dealers
+    WHERE Email = @Email;
+END
+GO
+
+-- SP: sp_GetAllDealers
+CREATE PROCEDURE [dbo].[sp_GetAllDealers]
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT DealerID, DealerName, Email, CompanyName, ContactNumber
+    FROM Dealers;
+END
+GO
+
+-- SP: sp_GetDealerById
+CREATE PROCEDURE [dbo].[sp_GetDealerById]
+    @DealerID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT DealerID, DealerName, Email, CompanyName, ContactNumber
+    FROM Dealers
+    WHERE DealerID = @DealerID;
+END
+GO
+
+-- SP: sp_AddProduct
+CREATE PROCEDURE [dbo].[sp_AddProduct]
+    @DealerID INT,
+    @ProductName NVARCHAR(255),
+    @Description NVARCHAR(MAX),
+    @Price DECIMAL(18,2),
+    @Stock INT,
+    @ImagePath NVARCHAR(255),
+    @CreatedDate DATETIME,
+    @UpdatedDate DATETIME
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO Products (DealerID, ProductName, Description, Price, Stock, ImagePath, CreatedDate, UpdatedDate)
+    VALUES (@DealerID, @ProductName, @Description, @Price, @Stock, @ImagePath, @CreatedDate, @UpdatedDate);
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_UpdateProduct
+CREATE PROCEDURE [dbo].[sp_UpdateProduct]
+    @ProductID INT,
+    @ProductName NVARCHAR(255),
+    @Description NVARCHAR(MAX),
+    @Price DECIMAL(18,2),
+    @Stock INT,
+    @ImagePath NVARCHAR(255),
+    @UpdatedDate DATETIME
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE Products
+    SET ProductName = @ProductName,
+        Description = @Description,
+        Price = @Price,
+        Stock = @Stock,
+        ImagePath = @ImagePath,
+        UpdatedDate = @UpdatedDate
+    WHERE ProductID = @ProductID;
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_DeleteProduct
+CREATE PROCEDURE [dbo].[sp_DeleteProduct]
+    @ProductID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DELETE FROM Products WHERE ProductID = @ProductID;
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_GetAllProducts
+CREATE PROCEDURE [dbo].[sp_GetAllProducts]
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT ProductID, DealerID, ProductName, Description, Price, Stock, ImagePath, CreatedDate, UpdatedDate
+    FROM Products;
+END
+GO
+
+-- SP: sp_GetProductById
+CREATE PROCEDURE [dbo].[sp_GetProductById]
+    @ProductID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT ProductID, DealerID, ProductName, Description, Price, Stock, ImagePath, CreatedDate, UpdatedDate
+    FROM Products
+    WHERE ProductID = @ProductID;
+END
+GO
+
+-- SP: sp_GetProductDetails
+CREATE PROCEDURE [dbo].[sp_GetProductDetails]
+    @ProductID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT ProductID, DealerID, ProductName, Description, Price, Stock, ImagePath, CreatedDate, UpdatedDate
+    FROM Products
+    WHERE ProductID = @ProductID;
+END
+GO
+
+-- SP: sp_GetProductsByDealer
+CREATE PROCEDURE [dbo].[sp_GetProductsByDealer]
+    @DealerID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT ProductID, DealerID, ProductName, Description, Price, Stock, ImagePath, CreatedDate, UpdatedDate
+    FROM Products
+    WHERE DealerID = @DealerID;
+END
+GO
+
+-- SP: sp_SearchProducts
+CREATE PROCEDURE [dbo].[sp_SearchProducts]
+    @SearchTerm NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT ProductID, ProductName, ImagePath
+    FROM Products
+    WHERE ProductName LIKE '%' + @SearchTerm + '%' OR AlliasName LIKE '%' + @SearchTerm + '%';
+END
+GO
+
+-- SP: sp_AddProductImage
+CREATE PROCEDURE [dbo].[sp_AddProductImage]
+    @ProductID INT,
+    @ImagePath NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO ProductImages (ProductID, ImagePath)
+    VALUES (@ProductID, @ImagePath);
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_GetImagesByProductId
+CREATE PROCEDURE [dbo].[sp_GetImagesByProductId]
+    @ProductID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT ImageID, ProductID, ImagePath
+    FROM ProductImages
+    WHERE ProductID = @ProductID;
+END
+GO
+
+-- SP: sp_CreateCustomerAddress
+CREATE PROCEDURE [dbo].[sp_CreateCustomerAddress]
+    @CustomerID INT,
+    @Address NVARCHAR(MAX),
+    @Name NVARCHAR(100),
+    @PhoneNumber NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO CustomerAddress (CustomerID, Address, Name, PhoneNumber)
+    VALUES (@CustomerID, @Address, @Name, @PhoneNumber);
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_GetCustomerAddress
+CREATE PROCEDURE [dbo].[sp_GetCustomerAddress]
+    @AddressID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT AddressID, CustomerID, Address, Name, PhoneNumber
+    FROM CustomerAddress
+    WHERE AddressID = @AddressID;
+END
+GO
+
+-- SP: sp_GetCustomerAddresses
+CREATE PROCEDURE [dbo].[sp_GetCustomerAddresses]
+    @CustomerID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT AddressID, CustomerID, Address, Name, PhoneNumber
+    FROM CustomerAddress
+    WHERE CustomerID = @CustomerID;
+END
+GO
+
+-- SP: sp_UpdateCustomerAddress
+CREATE PROCEDURE [dbo].[sp_UpdateCustomerAddress]
+    @AddressID INT,
+    @Address NVARCHAR(MAX),
+    @Name NVARCHAR(100),
+    @PhoneNumber NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE CustomerAddress
+    SET Address = @Address, Name = @Name, PhoneNumber = @PhoneNumber
+    WHERE AddressID = @AddressID;
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_DeleteCustomerAddress
+CREATE PROCEDURE [dbo].[sp_DeleteCustomerAddress]
+    @AddressID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DELETE FROM CustomerAddress
+    WHERE AddressID = @AddressID;
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_AddToCart
+CREATE PROCEDURE [dbo].[sp_AddToCart]
+    @CustomerID INT,
+    @ProductID INT,
+    @Quantity INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @ExistingQty INT;
+    SELECT @ExistingQty = Quantity
+    FROM AddToCart
+    WHERE CustomerID = @CustomerID AND ProductID = @ProductID AND IsCheckedOut = 0;
+    IF @ExistingQty IS NOT NULL
+    BEGIN
+        UPDATE AddToCart
+        SET Quantity = @ExistingQty + @Quantity,
+            AddedDate = GETDATE()
+        WHERE CustomerID = @CustomerID AND ProductID = @ProductID AND IsCheckedOut = 0;
+    END
+    ELSE
+    BEGIN
+        INSERT INTO AddToCart (CustomerID, ProductID, Quantity, AddedDate, IsCheckedOut)
+        VALUES (@CustomerID, @ProductID, @Quantity, GETDATE(), 0);
+    END
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: AddOrUpdateCartItem
+CREATE PROCEDURE [dbo].[AddOrUpdateCartItem]
+    @CustomerID INT,
+    @ProductID INT,
+    @Quantity INT,
+    @AddedDate DATETIME,
+    @IsCheckedOut BIT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF EXISTS (
+        SELECT 1 FROM AddToCart
+        WHERE CustomerID = @CustomerID AND ProductID = @ProductID AND IsCheckedOut = 0
+    )
+    BEGIN
+        UPDATE AddToCart
+        SET Quantity = Quantity + @Quantity,
+            AddedDate = @AddedDate
+        WHERE CustomerID = @CustomerID AND ProductID = @ProductID AND IsCheckedOut = 0;
+    END
+    ELSE
+    BEGIN
+        INSERT INTO AddToCart (CustomerID, ProductID, Quantity, AddedDate, IsCheckedOut)
+        VALUES (@CustomerID, @ProductID, @Quantity, @AddedDate, @IsCheckedOut);
+    END
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_GetCartByCustomer
+CREATE PROCEDURE [dbo].[sp_GetCartByCustomer]
+    @CustomerID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT c.CartID, c.ProductID, c.Quantity, p.ProductName, p.Price, p.ImagePath
+    FROM AddToCart c
+    INNER JOIN Products p ON c.ProductID = p.ProductID
+    WHERE c.CustomerID = @CustomerID AND c.IsCheckedOut = 0;
+END
+GO
+
+-- SP: sp_GetCartItemsByCustomer
+CREATE PROCEDURE [dbo].[sp_GetCartItemsByCustomer]
+    @CustomerID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT c.CartID, p.ProductID, p.ProductName, p.ImagePath, p.Price, c.Quantity
+    FROM AddToCart c
+    JOIN Products p ON c.ProductID = p.ProductID
+    WHERE c.CustomerID = @CustomerID AND c.IsCheckedOut = 0;
+END
+GO
+
+-- SP: sp_UpdateCartQuantity
+CREATE PROCEDURE [dbo].[sp_UpdateCartQuantity]
+    @CartID INT,
+    @ProductID INT,
+    @Quantity INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE AddToCart
+    SET Quantity = @Quantity,
+        AddedDate = GETDATE()
+    WHERE CartID = @CartID AND ProductID = @ProductID AND IsCheckedOut = 0;
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_RemoveFromCart
+CREATE PROCEDURE [dbo].[sp_RemoveFromCart]
+    @CartID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DELETE FROM AddToCart
+    WHERE CartID = @CartID AND IsCheckedOut = 0;
+    SELECT @@ROWCOUNT AS RowsAffected;
+END
+GO
+
+-- SP: sp_CreateOrder
+CREATE PROCEDURE [dbo].[sp_CreateOrder]
+    @CustomerID INT,
+    @ProductID INT,
+    @DealerID INT,
+    @Quantity INT,
+    @AddressID INT,
+    @OrderID INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRANSACTION;
+    IF NOT EXISTS (SELECT 1 FROM Customers WHERE CustomerID = @CustomerID)
+    BEGIN
+        ROLLBACK;
+        RAISERROR ('Invalid CustomerID.', 16, 1);
+        RETURN;
+    END
+    IF NOT EXISTS (SELECT 1 FROM CustomerAddress WHERE AddressID = @AddressID AND CustomerID = @CustomerID)
+    BEGIN
+        ROLLBACK;
+        RAISERROR ('Invalid AddressID or address does not belong to the customer.', 16, 1);
+        RETURN;
+    END
+    IF NOT EXISTS (SELECT 1 FROM Dealers WHERE DealerID = @DealerID)
+    BEGIN
+        ROLLBACK;
+        RAISERROR ('Invalid DealerID.', 16, 1);
+        RETURN;
+    END
+    DECLARE @CurrentStock INT;
+    SELECT @CurrentStock = Stock FROM Products WITH (UPDLOCK) WHERE ProductID = @ProductID;
+    IF @CurrentStock IS NULL
+    BEGIN
+        ROLLBACK;
+        RAISERROR ('Invalid ProductID.', 16, 1);
+        RETURN;
+    END
+    IF @CurrentStock < @Quantity
+    BEGIN
+        ROLLBACK;
+        RAISERROR ('Insufficient stock available.', 16, 1);
+        RETURN;
+    END
+    UPDATE Products SET Stock = Stock - @Quantity WHERE ProductID = @ProductID;
+    INSERT INTO Orders (CustomerID, ProductID, DealerID, Quantity, AddressID)
+    VALUES (@CustomerID, @ProductID, @DealerID, @Quantity, @AddressID);
+    SET @OrderID = SCOPE_IDENTITY();
+    INSERT INTO OrderStatus (OrderID) VALUES (@OrderID);
+    COMMIT;
+END
+GO
+
+-- SP: sp_GetOrdersByCustomer
+CREATE PROCEDURE [dbo].[sp_GetOrdersByCustomer]
+    @CustomerID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT
+        o.OrderID,
+        o.CustomerID,
+        o.ProductID,
+        o.DealerID,
+        o.Quantity,
+        o.OrderDate,
+        o.AddressID,
+        p.ProductName,
+        p.ImagePath,
+        p.Price,
+        d.DealerName,
+        d.CompanyName,
+        ca.Address,
+        ca.Name AS AddressName,
+        ca.PhoneNumber,
+        os.Status
+    FROM Orders o
+    JOIN Products p ON o.ProductID = p.ProductID
+    JOIN Dealers d ON o.DealerID = d.DealerID
+    JOIN CustomerAddress ca ON o.AddressID = ca.AddressID
+    LEFT JOIN OrderStatus os ON o.OrderID = os.OrderID
+    WHERE o.CustomerID = @CustomerID
+    ORDER BY o.OrderDate DESC;
+END
+GO
+
+-- SP: sp_DeleteOrder
+CREATE PROCEDURE [dbo].[sp_DeleteOrder]
+    @OrderID INT,
+    @DeletedOrderID INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRANSACTION;
+    DECLARE @ProductID INT, @Quantity INT;
+    SELECT @ProductID = ProductID, @Quantity = Quantity
+    FROM Orders
+    WHERE OrderID = @OrderID;
+    IF @ProductID IS NULL
+    BEGIN
+        ROLLBACK;
+        RAISERROR ('Order not found.', 16, 1);
+        RETURN;
+    END
+    DELETE FROM OrderStatus WHERE OrderID = @OrderID;
+    DELETE FROM Orders WHERE OrderID = @OrderID;
+    UPDATE Products SET Stock = Stock + @Quantity WHERE ProductID = @ProductID;
+    SET @DeletedOrderID = @OrderID;
+    COMMIT;
+END
+GO
